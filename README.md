@@ -1,4 +1,4 @@
-# Simple-Calculator
+# Simple-caclulator
 
 Please copy and paste this in your hookss --->Prepare-commit-msg and delete .sample in the file name
 
@@ -107,3 +107,24 @@ if [[ ! ${COMMIT_MSG} =~ $PATTERN ]]; then
   echo ""
   exit 1
 fi
+
+
+
+
+# 1. Build the image
+docker build -t nginx .
+
+# 2. Tag the image (template)
+docker tag image_name dockerhub_username/repository_name:tag
+
+# 2. Tag the image (your example)
+docker tag nginx hamzaziani/caclulator:version1
+
+# 3. Push to Docker Hub (template)
+docker push dockerhub_username/repository_name:tag
+
+# 3. Push to Docker Hub (your example)
+docker push hamzaziani/caclulator:version1
+
+# 4. Run the container (host port 8080 -> container port 80)
+docker run -p 8080:80 nginx

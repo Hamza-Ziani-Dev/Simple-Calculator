@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>calculater!!</title>
+    <link rel="stylesheet" href="https://pyscript.net/releases/2022.12.1/pyscript.css" />
+    <script defer src="https://pyscript.net/releases/2022.12.1/pyscript.js"></script>
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+
+      body {
+        font-family: "Segoe UI", system-ui, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #1e3c72, #2a5298);
+      }
+
+      .card {
+        width: 360px;
+        background: #f7f9fc;
+        border-radius: 18px;
+        padding: 28px;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+      }
+
+      h1 {
+        text-align: center;
+        font-size: 22px;
+        color: #1e3c72;
+        margin-bottom: 20px;
+        letter-spacing: 0.5px;
+      }
+
+      .display {
+        background: #1d2433;
+        color: #ffffff;
+        font-size: 40px;
+        text-align: right;
+        padding: 18px 16px;
+        border-radius: 12px;
+        margin-bottom: 18px;
+        min-height: 84px;
+        word-break: break-all;
+      }
+
+      .display .formula {
+        font-size: 16px;
+        color: #9fb3c8;
+        min-height: 20px;
+      }
+
+      .inputs {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 18px;
+      }
+
+      .field label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        color: #5a6b85;
+        margin-bottom: 6px;
+      }
+
+      .field input {
+        width: 100%;
+        padding: 14px 16px;
+        font-size: 22px;
+        font-weight: 500;
+        text-align: right;
+        border: 2px solid #d4dbe6;
+        border-radius: 10px;
+        background: #ffffff;
+        color: #1d2433;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        appearance: textfield;
+        -moz-appearance: textfield;
+      }
+
+      .field input::-webkit-outer-spin-button,
+      .field input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      .field input::placeholder {
+        color: #a5b3c8;
+        font-weight: 400;
+      }
+
+      .field input:focus {
+        border-color: #2a5298;
+        box-shadow: 0 0 0 4px rgba(42, 82, 152, 0.15);
+      }
+
+      .buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      .buttons button {
+        padding: 16px;
+        font-size: 20px;
+        font-weight: 600;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        color: #ffffff;
+        transition: transform 0.1s, box-shadow 0.1s, filter 0.2s;
+      }
+
+      .buttons button:hover {
+        filter: brightness(1.1);
+      }
+
+      .buttons button:active {
+        transform: scale(0.96);
+        box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+      }
+
+      button.btn-add { background: linear-gradient(135deg, #34d399, #059669); }
+      button.btn-sub { background: linear-gradient(135deg, #fb7185, #e11d48); }
+
+      .error {
+        margin-top: 16px;
+        text-align: center;
+        color: #e11d48;
+        font-size: 14px;
+        min-height: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>Calculator</h1>
+      <div class="display">
+        <div class="formula" id="formula">&nbsp;</div>
+        <div id="result">0</div>
+      </div>
+      <div class="inputs">
+        <div class="field">
+          <label for="num1">First number</label>
+          <input id="num1" type="number" placeholder="0" />
+        </div>
+        <div class="field">
+          <label for="num2">Second number</label>
+          <input id="num2" type="number" placeholder="0" />
+        </div>
+      </div>
+      <div class="buttons">
+        <button class="btn-add" id="btn-add">Add &#43;</button>
+        <button class="btn-sub" id="btn-sub">Subtract &#8722;</button>
+      </div>
+      <div class="error" id="error"></div>
+    </div>
+
+    <py-script>
+from pyodide.ffi import create_proxy
+
+def add_numbers(a, b):
+    return a + b
+
+def sub_numbers(a, b):
+    return a - b
+
+def get_values():
+    return (float(Element("num1").element.value), float(Element("num2").element.value))
+
+def show(formula, value):
+    Element("formula").write(formula)
+    Element("result").write(value)
+    Element("error").write("")
+
+def on_add(e=None):
+    try:
+        a, b = get_values()
+        show("{} + {}".format(a, b), add_numbers(a, b))
+    except ValueError:
+        Element("error").write("Enter both numbers first")
+    except Exception as ex:
+        Element("error").write("Error: {}".format(ex))
+
+def on_sub(e=None):
+    try:
+        a, b = get_values()
+        show("{} - {}".format(a, b), sub_numbers(a, b))
+    except ValueError:
+        Element("error").write("Enter both numbers first")
+    except Exception as ex:
+        Element("error").write("Error: {}".format(ex))
+
+Element("btn-add").element.addEventListener("click", create_proxy(on_add))
+Element("btn-sub").element.addEventListener("click", create_proxy(on_sub))
+    </py-script>
+  </body>
+</html>

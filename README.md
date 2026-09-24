@@ -123,6 +123,7 @@ docker tag nginx hamzaziani/caclulator:version1
 # 3. Push to Docker Hub (template)
 docker push dockerhub_username/repository_name:tag
 
+
 # 3. Push to Docker Hub (your example)
 docker push hamzaziani/caclulator:version1
 
